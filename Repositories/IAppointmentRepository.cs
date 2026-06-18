@@ -10,4 +10,5 @@ public interface IAppointmentRepository
     Task<AppointmentDto> UpdateAsync(int id, UpdateAppointmentDto dto);
     Task DeleteAsync(int id);
     Task<bool> ExistsByScheduledAtAsync(int userId, DateTimeOffset scheduledAt);
+    Task<IEnumerable<AppointmentReminderDto>> GetUpcomingAsync(DateTimeOffset from, DateTimeOffset to);
 }

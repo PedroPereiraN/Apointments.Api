@@ -66,6 +66,7 @@ public class UserRepository(AppointmentsStoreContext context) : IUserRepository
             throw new NotFoundException("User not found.");
 
         user.Name = dto.Name;
+        user.Email = dto.Email;
         user.UpdatedAt = DateTime.UtcNow;
 
         await context.SaveChangesAsync();

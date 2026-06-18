@@ -96,6 +96,22 @@ public class AppointmentRepository(AppointmentsStoreContext context) : IAppointm
         await context.SaveChangesAsync();
     }
 
+    public async Task<IEnumerable<AppointmentReminderDto>> GetUpcomingAsync(DateTimeOffset from, DateTimeOffset to)
+    {
+        var appointments = await context.Appointments
+            .Include(a => a.User)
+            .ToListAsync();
+
+        return appointments
+            .Where(a => a.ScheduledAt >= from && a.ScheduledAt <= to)
+            .Select(a => new AppointmentReminderDto(
+                a.Description,
+                a.ScheduledAt,
+                a.User.Name,
+                a.User.Email
+            ));
+    }
+
     public async Task<bool> ExistsByScheduledAtAsync(int userId, DateTimeOffset scheduledAt)
     {
         return await context.Appointments.AnyAsync(a =>
