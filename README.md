@@ -34,6 +34,8 @@ cd Appointments.Api
 Create a `.env` file in the project root (never commit this file):
 
 ```bash
+TZ=America/Cuiaba
+
 Smtp__Host=smtp.gmail.com
 Smtp__Port=587
 Smtp__Username=your@gmail.com
