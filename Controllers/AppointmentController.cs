@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("appointments")]
-public class AppointmentsController(IAppointmentService appointmentService) : ControllerBase
+public class AppointmentsController(IAppointmentService appointmentService, IReminderService reminderService) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetAll()
@@ -42,6 +42,13 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
     public async Task<IActionResult> Delete(int id)
     {
         await appointmentService.DeleteAsync(id);
+        return NoContent();
+    }
+
+    [HttpPost("remind-today")]
+    public async Task<IActionResult> RemindToday()
+    {
+        await reminderService.SendDayRemindersAsync(DateTimeOffset.Now);
         return NoContent();
     }
 }
