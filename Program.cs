@@ -22,5 +22,12 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
+var smtp = app.Configuration.GetSection("Smtp");
+var smtpConfigured = new[] { smtp["Host"], smtp["Username"], smtp["Password"], smtp["From"] }
+    .All(v => !string.IsNullOrEmpty(v));
+
+if (!smtpConfigured)
+    app.Logger.LogWarning("SMTP is not configured. The reminder cronjob will not run. Set Smtp__Host, Smtp__Username, Smtp__Password and Smtp__From in your .env file.");
+
 app.MapControllers();
 app.Run();

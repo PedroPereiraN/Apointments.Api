@@ -2,11 +2,25 @@ namespace Appointments.Api.Services;
 
 public class AppointmentReminderJob(
     IServiceScopeFactory scopeFactory,
+    IConfiguration configuration,
     ILogger<AppointmentReminderJob> logger
 ) : BackgroundService
 {
+    private bool IsSmtpConfigured()
+    {
+        var smtp = configuration.GetSection("Smtp");
+        return new[] { smtp["Host"], smtp["Username"], smtp["Password"], smtp["From"] }
+            .All(v => !string.IsNullOrEmpty(v));
+    }
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        if (!IsSmtpConfigured())
+        {
+            logger.LogWarning("Reminder cronjob is disabled: SMTP environment variables are not configured.");
+            return;
+        }
+
         var now = DateTimeOffset.Now;
         var nextHour = new DateTimeOffset(now.Year, now.Month, now.Day, now.Hour, 0, 0, now.Offset).AddHours(1);
         var delayUntilNextHour = nextHour - now;
